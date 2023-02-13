@@ -26,7 +26,9 @@
 
 	onMount(async () => {
 		// TODO: Fix types
-		const dataset: [number, number][] | undefined = await d3.json('data/my_weather_data.json');
+		const dataset: [number, number][] | undefined = await d3.json(
+			'../../data/my_weather_data.json'
+		);
 
 		if (!dataset) {
 			throw error(500, 'No data found');
