@@ -11,14 +11,15 @@
 		const unfilteredData: DSVRowArray<string> = await d3.csv(
 			'../../data/historical_lighthouses.csv'
 		);
+
+		if (!unfilteredData) {
+			error(404, 'Data not found');
+		}
+
 		const filteredData = unfilteredData.filter((d) => d.YearBuilt !== '0');
 		const sortedData = d3
 			.groups(filteredData, (d) => d.YearBuilt)
 			.sort((a, b) => d3.ascending(a[0], b[0]));
-
-		if (sortedData.length) {
-			error(404, 'No data found');
-		}
 
 		const xAccessor = (d: string) => Date.parse(d[0]);
 		const yAccessor = (d: string) => d[1].length;
