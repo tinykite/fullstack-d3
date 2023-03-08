@@ -92,6 +92,27 @@
 	});
 </script>
 
+<div class="introduction">
+	<h1 class="title">Historical Lighthouses in the UK</h1>
+	<p class="description">
+		More than 600 lighthouses & related buildings in England & Wales were built between 1514 - 1911.
+	</p>
+</div>
+
 <div bind:this={el} />
 
-<style></style>
+<style>
+	.introduction {
+		text-align: center;
+	}
+
+	.title {
+		margin: 2rem auto 0.5rem;
+	}
+	.description {
+		margin: 0 auto;
+		max-width: 50ch;
+		line-height: 1.5;
+		font-size: 1.25rem;
+	}
+</style>
