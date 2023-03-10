@@ -22,9 +22,13 @@
 
 		const width = d3.min([window.innerWidth * 0.9, window.innerHeight * 0.9]);
 
+		if (!width) {
+			throw error(400, 'No width found');
+		}
+
 		const dimensions: Dimensions = {
-			width: width ?? 0,
-			height: width ?? 0,
+			width: width,
+			height: width,
 			margin: {
 				top: 10,
 				right: 10,
@@ -67,8 +71,7 @@
 		const dots = bounds
 			.selectAll('circle')
 			.data(dataset)
-			.enter()
-			.append('circle')
+			.join('circle')
 			.attr('cx', (d) => xScale(xAccessor(d)))
 			.attr('cy', (d) => yScale(yAccessor(d)))
 			.attr('r', 4)
