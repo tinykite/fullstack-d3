@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import * as d3 from 'd3';
-	import type { DSVRowArray } from 'd3';
 	import { error } from '@sveltejs/kit';
 	import type { NumberValue } from 'd3';
 
@@ -108,7 +107,7 @@
 		const yAxisLabel = yAxis
 			.append('text')
 			.attr('x', -dimensions.boundedHeight / 2)
-			.attr('y', -dimensions.margin.left + 10)
+			.attr('y', -dimensions.margin.left + 15)
 			.attr('fill', 'black')
 			.style('font-size', '1.4em')
 			.text('Times Coupled')
