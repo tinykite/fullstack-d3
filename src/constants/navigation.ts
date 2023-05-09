@@ -6,5 +6,9 @@ export const primaryNavItems = [
 	{
 		name: 'Scatter plots',
 		path: '/examples/scatter-plots'
+	},
+	{
+		name: 'Bar charts',
+		path: '/examples/bar-charts'
 	}
 ];
