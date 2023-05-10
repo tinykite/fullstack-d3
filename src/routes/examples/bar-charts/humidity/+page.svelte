@@ -27,27 +27,29 @@
 			throw error(500, 'No data found');
 		}
 
+		// 2. Create chart dimensions
+
+		const width = 500;
+		let dimensions = {
+			width: width,
+			height: width * 0.6,
+			boundedWidth: 0,
+			boundedHeight: 0,
+			margin: {
+				top: 80,
+				right: 50,
+				bottom: 50,
+				left: 50
+			}
+		};
+		dimensions.boundedWidth = dimensions.width - dimensions.margin.left - dimensions.margin.right;
+		dimensions.boundedHeight = dimensions.height - dimensions.margin.top - dimensions.margin.bottom;
+
 		const drawHistogram = (metric) => {
-			const xAccessor = (d) => d[metric];
+			const metricAccessor = (d) => d[metric];
 			const yAccessor = (d) => d.length;
 
-			const width = 600;
-			const dimensions = {
-				width,
-				height: width * 0.6,
-				boundedWidth: 0,
-				boundedHeight: 0,
-				margin: {
-					top: 30,
-					right: 10,
-					bottom: 50,
-					left: 50
-				}
-			};
-
-			dimensions.boundedWidth = dimensions.width - dimensions.margin.right - dimensions.margin.left;
-			dimensions.boundedHeight =
-				dimensions.height - dimensions.margin.top - dimensions.margin.bottom;
+			// 3. Draw canvas
 
 			const wrapper = d3
 				.select(el)
@@ -57,18 +59,18 @@
 
 			const bounds = wrapper
 				.append('g')
-				.style('transform', `translate(${dimensions.margin.left}px ${dimensions.margin.top}px)`);
+				.style('transform', `translate(${dimensions.margin.left}px, ${dimensions.margin.top}px)`);
+
+			// 4. Create scales
 
 			const xScale = d3
 				.scaleLinear()
-				// @ts-ignore
-				.domain(d3.extent(dataset, xAccessor))
+				.domain(d3.extent(dataset, metricAccessor))
 				.range([0, dimensions.boundedWidth])
 				.nice();
 
-			// @ts-ignore
-			const binsGenerator = d3.bin().domain(xScale.domain()).value(xAccessor).thresholds(12);
-			// @ts-ignore
+			const binsGenerator = d3.bin().domain(xScale.domain()).value(metricAccessor).thresholds(8);
+
 			const bins = binsGenerator(dataset);
 
 			const yScale = d3
@@ -77,12 +79,11 @@
 				.range([dimensions.boundedHeight, 0])
 				.nice();
 
-			const binsGroup = bounds.append('g');
+			// 5. Draw data
 
-			const binGroups = binsGroup.selectAll().data(bins).join('g');
+			const binGroups = bounds.selectAll('g').data(bins).enter().append('g');
 
 			const barPadding = 1;
-
 			const barRects = binGroups
 				.append('rect')
 				.attr('x', (d) => xScale(d.x0) + barPadding / 2)
@@ -102,8 +103,7 @@
 				.style('font-size', '12px')
 				.style('font-family', 'sans-serif');
 
-			const mean = d3.mean(dataset, xAccessor) as Number;
-
+			const mean = d3.mean(dataset, metricAccessor);
 			const meanLine = bounds
 				.append('line')
 				.attr('x1', xScale(mean))
@@ -113,20 +113,22 @@
 				.attr('stroke', 'maroon')
 				.attr('stroke-dasharray', '2px 4px');
 
-			const meanLineLabel = bounds
+			const meanLabel = bounds
 				.append('text')
-				.text('mean')
 				.attr('x', xScale(mean))
-				.attr('y', 50)
-				.attr('text-anchor', 'middle')
-				.attr('fill', 'blue')
-				.attr('text-size', '12px');
+				.attr('y', -20)
+				.text('mean')
+				.attr('fill', 'maroon')
+				.style('font-size', '12px')
+				.style('text-anchor', 'middle');
 
-			const axisGenerator = d3.axisBottom().scale(xScale);
+			// 6. Draw peripherals
+
+			const xAxisGenerator = d3.axisBottom().scale(xScale);
 
 			const xAxis = bounds
 				.append('g')
-				.call(axisGenerator)
+				.call(xAxisGenerator)
 				.style('transform', `translateY(${dimensions.boundedHeight}px)`);
 
 			const xAxisLabel = xAxis
@@ -146,7 +148,9 @@
 			'uvIndex',
 			'windBearing',
 			'temperatureMin',
-			'temperatureMax'
+			'temperatureMax',
+			'visibility',
+			'cloudCover'
 		];
 
 		metrics.forEach(drawHistogram);
