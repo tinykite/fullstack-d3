@@ -55,7 +55,13 @@
 				.select(el)
 				.append('svg')
 				.attr('width', dimensions.width)
-				.attr('height', dimensions.height);
+				.attr('height', dimensions.height)
+				.attr('role', 'figure')
+				.attr('tabindex', '0');
+
+			const label = wrapper
+				.append('title')
+				.text('Histogram looking at the distribution of humidity in 2016');
 
 			const bounds = wrapper
 				.append('g')
@@ -81,7 +87,26 @@
 
 			// 5. Draw data
 
-			const binGroups = bounds.selectAll('g').data(bins).enter().append('g');
+			const binsGroup = bounds
+				.append('g')
+				.attr('tabindex', '0')
+				.attr('role', 'list')
+				.attr('aria-label', 'histogram bars');
+
+			const binGroups = binsGroup
+				.selectAll('g')
+				.data(bins)
+				.enter()
+				.append('g')
+				.attr('tabindex', '0')
+				.attr('role', 'listitem')
+				.attr(
+					'aria-label',
+					(d) =>
+						`There were ${yAccessor(d)} days between ${d.x0.toString().slice(0, 4)} and ${d.x1
+							.toString()
+							.slice(0, 4)} humidity levels.`
+				);
 
 			const barPadding = 1;
 			const barRects = binGroups
@@ -153,7 +178,9 @@
 			'cloudCover'
 		];
 
-		metrics.forEach(drawHistogram);
+		drawHistogram('humidity');
+
+		// metrics.forEach(drawHistogram);
 	});
 </script>
 
